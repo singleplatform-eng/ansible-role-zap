@@ -1,0 +1,12 @@
+---
+# handlers file for zap
+
+- name: start zap
+  service:
+    name: zap
+    state: started
+
+- name: restart zap
+  service:
+    name: zap
+    state: restarted

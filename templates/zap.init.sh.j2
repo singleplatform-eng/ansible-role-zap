@@ -1,0 +1,66 @@
+#! /bin/sh
+JAVAPATH="{{zap_java_path}}"
+ZAP_VERSION="{{zap_version}}"
+ZAP_JAR_HOME="{{zap_jar_home}}"
+ZAP_USER="{{zap_user}}"
+ZAP_DIR="{{zap_dir}}"
+ZAP_JAVAARGS="{{zap_javaargs}}"
+ZAP_PID_FILE="{{zap_pid_file}}"
+ZAP_HOST="{{zap_host}}"
+ZAP_ALLOWED_NETWORK="{{zap_allowed_network}}"
+
+start() {
+if [ ! -f ${ZAP_PID_FILE} ]; then
+  su - ${ZAP_USER} -s /bin/bash -c "cd ${ZAP_JAR_HOME}/ZAP_${ZAP_VERSION};$JAVAPATH ${ZAP_JAVAARGS} -jar zap-${ZAP_VERSION}.jar -dir ${ZAP_DIR} -config api.addrs.addr.name=${ZAP_ALLOWED_NETWORK} -config api.addrs.addr.regex=true -host ${ZAP_HOST} -nostdout -daemon 2>&1 1> /dev/null &"
+  PID=$(printf $(ps -U zap | cut -d' ' -f2))
+  if [ ! -z PID ]; then
+   echo $PID > ${ZAP_PID_FILE}
+  else
+   echo "Zap failed to generate a process"
+   exit 1
+  fi
+  echo "Zap is now running at PID: $(cat ${ZAP_PID_FILE})"
+else
+  echo "ZAP is already running at PID: $(cat ${ZAP_PID_FILE})"
+  exit 0
+fi
+}
+
+stop() {
+if [ ! -f ${ZAP_PID_FILE} ]; then
+  echo "Zap isn't running"
+else
+  echo "Sending SIGINT to Zap PID: $(cat ${ZAP_PID_FILE})"
+  kill $(cat ${ZAP_PID_FILE})
+  sleep 2
+  ps $(cat ${ZAP_PID_FILE}) > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Zap failed to stop"
+    exit 1
+  fi
+  
+  rm ${ZAP_PID_FILE}
+fi
+}
+
+restart() {
+ stop
+ if [ $? -ne 1 ]; then
+ start
+ else exit 1
+ fi
+}
+
+status() {
+  if [ ! -f ${ZAP_PID_FILE} ]; then
+    echo "Zap isn't running"
+  else echo "Zap is running at PID: $(cat ${ZAP_PID_FILE})"
+  fi
+}
+
+if [ -z "$1" ]; then
+echo "Usage: start stop restart status"
+exit 0
+else $1
+exit 0
+fi

@@ -1,0 +1,48 @@
+---
+# tasks file for zap
+
+- name: Zap | Group
+  group:
+    name: "{{zap_group}}"
+  tags: zap_install
+
+- name: Zap | User
+  user:
+    name: "{{zap_user}}"
+    home: "{{zap_user_home}}"
+    shell: "{{zap_user_shell}}"
+    group: "{{zap_group}}"
+    createhome: true
+
+- name: Check Install
+  stat:
+    path: "{{zap_jar_home}}/ZAP_{{zap_version}}/zap-{{zap_version}}.jar"
+  register: jar_installed
+
+- name: debug
+  debug:
+    msg: "{{jar_installed}}"
+
+- block:
+  - name: Download Tar
+    unarchive:
+      src: "https://github.com/zaproxy/zaproxy/releases/download/{{zap_version}}/ZAP_{{zap_version}}_Linux.tar.gz"
+      dest: "{{zap_jar_home}}/"
+      copy: false
+  when: jar_installed is defined and not jar_installed.stat.exists
+
+- name: Install Service
+  template:
+    dest: /etc/init.d/zap
+    mode: 755
+    owner: root
+    src: zap.init.sh.j2
+  notify: restart zap
+
+- name: Enable Service
+  service:
+    name: zap
+    enabled: true
+    state: started
+  
+

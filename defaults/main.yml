@@ -1,0 +1,15 @@
+---
+# defaults file for zap
+
+zap_user: zap
+zap_group: zap
+zap_user_home: /var/zap
+zap_user_shell: /sbin/nologin
+zap_jar_home: /opt
+zap_version: 2.7.0
+zap_java_path: /opt/jre1.8.0_151/bin/java
+zap_dir: "{{zap_user_home}}"
+zap_javaargs: ''
+zap_pid_file: /var/run/zap.pid
+zap_host: 0.0.0.0
+zap_allowed_network: .*
