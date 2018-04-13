@@ -1,38 +1,53 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+This installs and lightly configures the OWASP ZAP Proxy project. 
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+java 8 runtime
+
+
+Supported Systems
+-----------------
+
+Ubuntu 14.04
+
+Should work anywhere that has a java 8 jre and supports init scripts
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+zap_user: zap
+zap_group: zap
+zap_user_home: /var/zap
+zap_user_shell: /sbin/nologin
+zap_jar_home: /opt
+zap_version: 2.7.0
+zap_java_path: /opt/jre1.8.0_151/bin/java
+zap_dir: "{{zap_user_home}}"
+zap_javaargs: ''
+zap_pid_file: /var/run/zap.pid
+zap_host: 0.0.0.0
+zap_allowed_network: .*
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: zappers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: java }
+         - { role: zap }
 
 License
 -------
 
 BSD
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
