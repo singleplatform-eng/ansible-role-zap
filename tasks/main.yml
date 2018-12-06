@@ -34,7 +34,7 @@
 - name: Install Service
   template:
     dest: /etc/init.d/zap
-    mode: 755
+    mode: 0755
     owner: root
     src: zap.init.sh.j2
   notify: restart zap
