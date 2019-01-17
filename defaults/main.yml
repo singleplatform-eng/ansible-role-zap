@@ -13,3 +13,4 @@ zap_javaargs: ''
 zap_pid_file: /var/run/zap.pid
 zap_host: 0.0.0.0
 zap_allowed_network: .*
+zap_api_key: mykey123
