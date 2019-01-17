@@ -35,7 +35,7 @@ else
   kill $(cat ${ZAP_PID_FILE})
   sleep 2
   ps $(cat ${ZAP_PID_FILE}) > /dev/null
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 1 ]; then
     echo "Zap failed to stop"
     exit 1
   fi
