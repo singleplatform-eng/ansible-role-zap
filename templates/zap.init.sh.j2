@@ -7,11 +7,11 @@ ZAP_DIR="{{zap_dir}}"
 ZAP_JAVAARGS="{{zap_javaargs}}"
 ZAP_PID_FILE="{{zap_pid_file}}"
 ZAP_HOST="{{zap_host}}"
-ZAP_ALLOWED_NETWORK="{{zap_allowed_network}}"
+ZAP_ALLOWED_ADDRESSES="{{zap_allowed_addresses}}"
 
 start() {
 if [ ! -f ${ZAP_PID_FILE} ]; then
-  su - ${ZAP_USER} -s /bin/bash -c "cd ${ZAP_JAR_HOME}/ZAP_${ZAP_VERSION};$JAVAPATH ${ZAP_JAVAARGS} -jar zap-${ZAP_VERSION}.jar -dir ${ZAP_DIR} -config api.addrs.addr.name=${ZAP_ALLOWED_NETWORK} -config api.addrs.addr.regex=true -host ${ZAP_HOST} -nostdout -daemon 2>&1 1> /dev/null &"
+  su - ${ZAP_USER} -s /bin/bash -c "cd ${ZAP_JAR_HOME}/ZAP_${ZAP_VERSION};$JAVAPATH ${ZAP_JAVAARGS} -jar zap-${ZAP_VERSION}.jar -dir ${ZAP_DIR} {% for allowed_address in zap_allowed_addresses %} -config api.addrs.addr(\({{zap_allowed_addresses.index(allowed_address)}}\).name={{allowed_address}} -config api.addrs.addr(\({{zap_allowed_addresses.index(allowed_address)}}\).regex=true{% endfor %} -host ${ZAP_HOST} -config api.key=${ZAP_API_KEY} -nostdout -daemon 2>&1 1> /dev/null &"
   PID=$(printf $(ps -U zap | cut -d' ' -f2))
   if [ ! -z PID ]; then
    echo $PID > ${ZAP_PID_FILE}
