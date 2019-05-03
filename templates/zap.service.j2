@@ -1,0 +1,12 @@
+[Unit]
+Description=OWASP Zap Service
+After=network.target
+
+[Service]
+User={{zap_user}}
+Group={{zap_group}}
+WorkingDirectory={{zap_jar_home}}/ZAP_{{zap_version}}
+ExecStart={{zap_java_path}} {{zap_javaargs}} -jar {{zap_jar_home}}/ZAP_{{zap_version}}/zap-{{zap_version}}.jar -dir {{zap_dir}} {% for allowed_address in zap_allowed_addresses %} -config api.addrs.addr({{zap_allowed_addresses.index(allowed_address)}}).name={{allowed_address}} -config api.addrs.addr({{zap_allowed_addresses.index(allowed_address)}}).regex=true{% endfor %} -host {{zap_host}} -config api.key={{zap_api_key}} -daemon
+
+[Install]
+WantedBy=multi-user.target
