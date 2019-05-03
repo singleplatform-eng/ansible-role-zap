@@ -19,10 +19,6 @@
     path: "{{zap_jar_home}}/ZAP_{{zap_version}}/zap-{{zap_version}}.jar"
   register: jar_installed
 
-- name: debug
-  debug:
-    msg: "{{jar_installed}}"
-
 - block:
   - name: Download Tar
     unarchive:
