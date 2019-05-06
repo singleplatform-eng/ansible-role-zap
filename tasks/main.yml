@@ -38,14 +38,6 @@
   when: ansible_service_mgr != 'systemd'
 
 - block:
-  - name: Make Config Path
-    file:
-      name: /etc/zap
-      owner: root
-      group: root
-      mode: 0700
-      state: directory
-
   - name: Install Service
     template:
       dest: /etc/systemd/system/zap.service
