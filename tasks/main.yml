@@ -19,10 +19,6 @@
     path: "{{zap_jar_home}}/ZAP_{{zap_version}}/zap-{{zap_version}}.jar"
   register: jar_installed
 
-- name: debug
-  debug:
-    msg: "{{jar_installed}}"
-
 - block:
   - name: Download Tar
     unarchive:
@@ -31,18 +27,36 @@
       copy: false
   when: jar_installed is defined and not jar_installed.stat.exists
 
-- name: Install Service
-  template:
-    dest: /etc/init.d/zap
-    mode: 0755
-    owner: root
-    src: zap.init.sh.j2
-  notify: restart zap
+- block:
+  - name: Install Init Script
+    template:
+      dest: /etc/init.d/zap
+      mode: 0755
+      owner: root
+      src: zap.init.sh.j2
+    notify: restart zap
+  when: ansible_service_mgr != 'systemd'
+
+- block:
+  - name: Install Service
+    template:
+      dest: /etc/systemd/system/zap.service
+      src: zap.service.j2
+      owner: root
+      group: root
+      mode: 0600
+    register: zap_service_change
+    notify: restart zap
+
+  - name: Reload
+    systemd:
+      daemon_reload: yes
+    when: zap_service_change is changed
+
+  when: ansible_service_mgr == 'systemd'
 
 - name: Enable Service
   service:
     name: zap
     enabled: true
     state: started
-  
-
