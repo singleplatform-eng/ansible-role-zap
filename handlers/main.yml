@@ -5,8 +5,10 @@
   service:
     name: zap
     state: started
+  listen: "start application"
 
 - name: restart zap
   service:
     name: zap
     state: restarted
+  listen: "restart application"
